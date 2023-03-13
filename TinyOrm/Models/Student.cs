@@ -13,10 +13,10 @@ namespace TinyOrm.Models
 		public string? LastName { get; set; }
 
 		[OneToOne("student_id")]
-		public Address? address { get; set; }
+		public Address? Address{ get; set; }
 
 		[OneToMany("student_id")]
-		public List<Hobby>? hobbies { get; set; }
+		public List<Hobby>? Hobbies { get; set; }
 
 		[ManyToMany("class_id")]
 		[JoinTable("studentClass")]

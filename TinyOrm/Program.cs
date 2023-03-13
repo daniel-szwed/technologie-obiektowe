@@ -37,7 +37,7 @@ using (var connection = new SqliteConnection(connectionString))
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT,
             description TEXT,
-            student_id TEXT,
+            student_id INTEGER,
             FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
         );
 
@@ -46,7 +46,7 @@ using (var connection = new SqliteConnection(connectionString))
             street TEXT,
             number TEXT,
             zipCode TEXT,
-            student_id TEXT,
+            student_id INTEGER,
             FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
         );
 
@@ -117,8 +117,34 @@ var student = new Student()
 {
     FirstName = "Daniel",
     LastName = "Szwed",
+    Address = new Address()
+    {
+        Number = "333",
+        Street = "Aleje Tysiaclecia",
+        ZipCode = "26-110"
+    },
+    Hobbies = new List<Hobby>()
+    {
+        new Hobby()
+        {
+            Name = "Computer sience",
+            Description = "Coding stuff"
+        }
+    },
+    Classes = new List<Class>()
+    {
+        new Class()
+        {
+            Name = "Klasa jakas tam"
+        }
+    }
 };
 provider.CreateOrUpdate(student);
+student.FirstName = "Marek";
+student.Hobbies.First().Description += " :)";
+student.Address.Number = "222";
+provider.CreateOrUpdate(student);
+provider.Remove(student);
 var students = provider.ReadAll<Student>();
 var classes = provider.ReadAll<Class>();
 var test = "test";

@@ -13,5 +13,8 @@ namespace TinyOrm.Models
 
         [Column("zipCode")]
         public string? ZipCode { get; set; }
+
+        [Column("student_id")]
+        public long? StudentId { get; set; }
     }
 }

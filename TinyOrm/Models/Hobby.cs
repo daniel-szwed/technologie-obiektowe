@@ -11,8 +11,8 @@ namespace TinyOrm.Models
         [Column("description")]
         public string? Description { get; set; }
 
-        //[ForeignKey("student_id")]
-        //public Student student { get; set; }
+        [Column("student_id")]
+        public long? StudentId { get; set; }
     }
 }
 
