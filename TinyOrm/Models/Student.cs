@@ -7,15 +7,9 @@ namespace TinyOrm.Models;
 [Table("students")]
 public class Student : EntityBase
 {
-    public Student()
-    {
-        
-    }
+    public Student() { }
 
-    public Student(long? id) : base(id)
-    {
-            
-    }
+    public Student(long? id) : base(id) { }
     
     [Column("firstName")] 
     public string? FirstName { get; set; }
@@ -24,12 +18,12 @@ public class Student : EntityBase
     public string? LastName { get; set; }
 
     [OneToOne("student_id")] 
-    public Address? Address { get; set; }
+    public virtual Address? Address { get; set; }
 
     [OneToMany("student_id")] 
-    public List<Hobby>? Hobbies { get; set; }
+    public virtual IEnumerable<Hobby>? Hobbies { get; set; }
 
     [ManyToMany("class_id")]
     [JoinTable("studentClass")]
-    public IEnumerable<Class>? Classes { get; set; }
+    public virtual IEnumerable<Class>? Classes { get; set; }
 }

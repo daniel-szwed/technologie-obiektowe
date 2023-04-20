@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Linq;
+﻿using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
@@ -12,36 +11,17 @@ public class LazyWrapperGenerator : ISourceGenerator
 {
     public void Execute(GeneratorExecutionContext context)
     {
-        // Get the syntax receiver to access the generated source code
-        //if (context.SyntaxReceiver is not ISyntaxReceiver receiver)
-        //{
-        //    return;
-        //}
-
         var classesToGenerate = context.Compilation
             .GetSymbolsWithName(symbolName => true, SymbolFilter.Type)
             .OfType<INamedTypeSymbol>()
             .Where(symbol =>
                 symbol.GetAttributes().Any(attr => attr.AttributeClass?.Name == nameof(GenerateLazyWrapperAttribute)));
 
-        // Get the compilation and semantic model
-        var compilation = context.Compilation;
-        //var semanticModel = compilation.GetSemanticModel(receiver.TargetUnit);
-
-        var outputDirectory =
-            context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.CompilerGeneratedFilesOutputPath",
-                out var outputPath)
-                ? outputPath
-                : Path.GetDirectoryName(context.Compilation.SyntaxTrees.First().FilePath);
-
-        //Directory.CreateDirectory(outputDirectory);
-
         // Generate the LazyWrapper class for each marked class
         foreach (var classToGenerate in classesToGenerate)
         {
             var generatedSourceCode = GenerateLazyClassSource(classToGenerate);
             var outputFileName = $"Lazy{classToGenerate.Name}.g.cs";
-            //File.WriteAllText(Path.Combine(outputDirectory, outputFileName), generatedSourceCode);
             context.AddSource(outputFileName, SourceText.From(generatedSourceCode, Encoding.UTF8));
         }
     }
@@ -89,11 +69,11 @@ public class LazyWrapperGenerator : ISourceGenerator
         builder.AppendLine("    {");
 
         foreach (var property in propertiesWithRelationAttribute)
-            builder.AppendLine(
-                $"        private {property.Type} {char.ToLower(property.Name[0])}{property.Name.Substring(1)};");
+        {
+            builder.AppendLine($"        private {property.Type} {GetPropertyCamelCaseName(property)};");
+        }
 
         builder.AppendLine("        private IDataProvider dataProvider;");
-        // builder.AppendLine("        private long? id;");
         builder.AppendLine();
 
         builder.AppendLine($"        public Lazy{typeSymbol.Name}(IDataProvider provider, {typeSymbol.Name} source) : base(source.Id)");
@@ -103,8 +83,7 @@ public class LazyWrapperGenerator : ISourceGenerator
         builder.AppendLine();
 
         foreach (var property in propertiesWithColumnAttribute)
-            builder.AppendLine(
-                $"            {char.ToUpper(property.Name[0])}{property.Name.Substring(1)} = source.{property.Name};");
+            builder.AppendLine($"            {property.Name} = source.{property.Name};");
 
         builder.AppendLine("        }");
         builder.AppendLine();
@@ -117,16 +96,10 @@ public class LazyWrapperGenerator : ISourceGenerator
             var propertySourceCode =
                 $$"""
                         {{GetAttributes(property)}}
-                        public {{property.Type}} {{property.Name}}
+                        public override {{property.Type}} {{property.Name}}
                         {
-                            get
-                            {
-                                return this.{{char.ToLower(property.Name[0])}}{{property.Name.Substring(1)}} ??= dataProvider.GetNestedEntity<{{property.Type}}>(this, nameof({{property.Name}}));;
-                            }
-                            set
-                            {
-                                {{char.ToLower(property.Name[0])}}{{property.Name.Substring(1)}} = value;
-                            }
+                            get => this.{{GetPropertyCamelCaseName(property)}} ??= dataProvider.GetNestedEntity<{{property.Type}}>(this, nameof({{property.Name}}));
+                            set => {{GetPropertyCamelCaseName(property)}} = value;
                         }
                 """;
 
@@ -140,6 +113,11 @@ public class LazyWrapperGenerator : ISourceGenerator
         builder.AppendLine("}");
 
         return builder.ToString();
+    }
+
+    private string GetPropertyCamelCaseName(IPropertySymbol property)
+    {
+        return $"{char.ToLower(property.Name[0])}{property.Name.Substring(1)}";
     }
 
     private string GetAttributes(IPropertySymbol property)

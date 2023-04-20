@@ -402,7 +402,7 @@ public class SqliteProvider : IDataProvider
                 new Specification
                 {
                     TableName = joinTableName,
-                    ColumnName = row.GetType().Name.ToLower() + "_id",
+                    ColumnName = row.GetType().Name.ToLower().Replace("lazy", string.Empty) + "_id",
                     DesiredValues = new[] { row.Id }
                 });
             var ids = new List<long?>();
