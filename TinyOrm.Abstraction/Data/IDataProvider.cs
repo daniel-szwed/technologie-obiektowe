@@ -7,6 +7,7 @@ namespace TinyOrm.Abstraction.Data
         T CreateOrUpdate<T>(T entity) where T : EntityBase;
         T GetNestedEntity<T>(EntityBase parent, string nestedPropertyName);
         IEnumerable<T> ReadAll<T>() where T : EntityBase, new();
-        bool Remove<T>(T entity) where T : EntityBase;
+        T GetById<T>(long id) where T : EntityBase, new();
+        bool Delete<T>(T entity) where T : EntityBase;
     }
 }

@@ -87,6 +87,20 @@ public class SqliteProvider : IDataProvider
         return GetAll<T>();
     }
 
+    public T? GetById<T>(long id) where T : EntityBase, new()
+    {
+        var specification = new Specification()
+        {
+            TableName = GetTableName(typeof(T)),
+            ColumnName = "id",
+            DesiredValues = new[] { (long?)id }
+        };
+
+        var collection = GetAll<T>(specification);
+
+        return collection.FirstOrDefault();
+    }
+
     public T GetNestedEntity<T>(EntityBase parent, string nestedPropertyName)
     {
         var propertyToMap = parent.GetType()
@@ -105,7 +119,7 @@ public class SqliteProvider : IDataProvider
         return (T)propertyToMap.GetValue(parent);
     }
 
-    public bool Remove<T>(T entity) where T : EntityBase
+    public bool Delete<T>(T entity) where T : EntityBase
     {
         var tableName = entity!.GetType().GetCustomAttribute<TableAttribute>()!.Name;
         var commandText = @$"DELETE FROM {tableName} WHERE id = {entity.Id}";
@@ -261,7 +275,6 @@ public class SqliteProvider : IDataProvider
     }
 
     #endregion
-
 
     #region ReadAll private methods
 
