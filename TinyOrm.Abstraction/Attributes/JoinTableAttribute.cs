@@ -1,4 +1,6 @@
-﻿namespace TinyOrm.Attributes
+﻿using System;
+
+namespace TinyOrm.Abstraction.Attributes
 {
     public class JoinTableAttribute : Attribute
     {
@@ -6,7 +8,7 @@
 
         public JoinTableAttribute(string name)
         {
-            this.Name = name;
+            Name = name;
         }
     }
 }

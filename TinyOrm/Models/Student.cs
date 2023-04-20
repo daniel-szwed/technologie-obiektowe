@@ -1,26 +1,35 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using TinyOrm.Attributes;
+﻿using TinyOrm.Abstraction.Attributes;
+using TinyOrm.Abstraction.Data;
 
-namespace TinyOrm.Models
+namespace TinyOrm.Models;
+
+[GenerateLazyWrapper]
+[Table("students")]
+public class Student : EntityBase
 {
-    [Table("students")]
-	public class Student : EntityBase
-	{ 
-		[Column("firstName")]
-		public string? FirstName { get; set; }
+    public Student()
+    {
+        
+    }
 
-		[Column("lastName")]
-		public string? LastName { get; set; }
+    public Student(long? id) : base(id)
+    {
+            
+    }
+    
+    [Column("firstName")] 
+    public string? FirstName { get; set; }
 
-		[OneToOne("student_id")]
-		public Address? Address{ get; set; }
+    [Column("lastName")] 
+    public string? LastName { get; set; }
 
-		[OneToMany("student_id")]
-		public List<Hobby>? Hobbies { get; set; }
+    [OneToOne("student_id")] 
+    public Address? Address { get; set; }
 
-		[ManyToMany("class_id")]
-		[JoinTable("studentClass")]
-        public IEnumerable<Class>? Classes { get; set; }
-	}
+    [OneToMany("student_id")] 
+    public List<Hobby>? Hobbies { get; set; }
+
+    [ManyToMany("class_id")]
+    [JoinTable("studentClass")]
+    public IEnumerable<Class>? Classes { get; set; }
 }
-

@@ -1,18 +1,14 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
-using TinyOrm.Attributes;
+﻿using TinyOrm.Abstraction.Attributes;
+using TinyOrm.Abstraction.Data;
 
-namespace TinyOrm.Models
+namespace TinyOrm.Models;
+
+[Table("classes")]
+public class Class : EntityBase
 {
-	[Table("classes")]
-	public class Class : EntityBase
-	{ 
-		[Column("name")]
-		public string? Name { get; set; }
+    [Column("name")] public string? Name { get; set; }
 
-		[ManyToMany("student_id")]
-		[JoinTable("studentClass")]
-		public IEnumerable<Student>? Students { get; set; }
-	}
+    [ManyToMany("student_id")]
+    [JoinTable("studentClass")]
+    public IEnumerable<Student>? Students { get; set; }
 }
-

@@ -1,16 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using TinyOrm.Abstraction.Attributes;
+using TinyOrm.Abstraction.Data;
 
-namespace TinyOrm.Models
+namespace TinyOrm.Models;
+
+[Table("studentClass")]
+public class StudentClass : EntityBase
 {
-	[Table("studentClass")]
-    public class StudentClass : EntityBase
-	{
+    [Column("student_id")] public long? StudentId { get; set; }
 
-		[Column("student_id")]
-		public long? StudentId { get; set; }
-
-		[Column("class_id")]
-		public long? ClassId { get; set; }
-	}
+    [Column("class_id")] public long? ClassId { get; set; }
 }
-

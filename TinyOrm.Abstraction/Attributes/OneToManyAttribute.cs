@@ -1,12 +1,14 @@
-﻿namespace TinyOrm.Attributes
+﻿using System;
+
+namespace TinyOrm.Abstraction.Attributes
 {
     public class OneToManyAttribute : Attribute
     {
-        public string NavigationProperty { get; set; }
-
         public OneToManyAttribute(string navigationProperty)
         {
             NavigationProperty = navigationProperty;
         }
+
+        public string NavigationProperty { get; }
     }
 }

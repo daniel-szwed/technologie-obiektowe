@@ -1,18 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using TinyOrm.Abstraction.Attributes;
+using TinyOrm.Abstraction.Data;
 
-namespace TinyOrm.Models
+namespace TinyOrm.Models;
+
+[Table("hobbies")]
+public class Hobby : EntityBase
 {
-    [Table("hobbies")]
-    public class Hobby : EntityBase
-    { 
-        [Column("name")]
-        public string? Name { get; set; }
+    [Column("name")] public string? Name { get; set; }
 
-        [Column("description")]
-        public string? Description { get; set; }
+    [Column("description")] public string? Description { get; set; }
 
-        [Column("student_id")]
-        public long? StudentId { get; set; }
-    }
+    [Column("student_id")] public long? StudentId { get; set; }
 }
-
