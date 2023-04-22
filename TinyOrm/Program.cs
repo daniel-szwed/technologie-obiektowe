@@ -153,17 +153,8 @@ var student = new Student
     }
 };
 var student2 = provider.CreateOrUpdate(student);
-// var street = lazyStudent.Address.Street;
-var student1 = provider.GetById<Student>(1);
-var lazyStudent = new LazyStudent(provider, student1);
+var lazyStudent = provider.GetById<LazyStudent>(1);
 var address = lazyStudent.Address;
+var hobbies = lazyStudent.Hobbies;
 var classes = lazyStudent.Classes;
-Console.WriteLine(address.Street);
-//student.FirstName = "Marek";
-//student.Hobbies.First().Description += " :)"; 
-//student.Address.Number = "222";
-//provider.CreateOrUpdate(student);
-//provider.Remove(student);
-//var students = provider.ReadAll<Student>();
-//var classes = provider.ReadAll<Class>();
-var test = "test";
+Console.WriteLine("End");

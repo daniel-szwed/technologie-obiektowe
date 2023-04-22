@@ -3,7 +3,7 @@
 namespace TinyOrm.Abstraction.Attributes
 {
     [AttributeUsage(AttributeTargets.Class)]
-    public class GenerateLazyWrapperAttribute : Attribute
+    public class GenerateLazyDerivedClassAttribute : Attribute
     {
     }
 }

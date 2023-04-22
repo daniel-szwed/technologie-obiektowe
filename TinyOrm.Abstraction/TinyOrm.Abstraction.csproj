@@ -5,11 +5,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Remove="Attributes\"/>
-        <None Remove="Data\"/>
+        <None Remove="Attributes\" />
+        <None Remove="Data\" />
     </ItemGroup>
     <ItemGroup>
-        <Folder Include="Attributes\"/>
-        <Folder Include="Data\"/>
+        <Folder Include="Attributes\" />
     </ItemGroup>
 </Project>

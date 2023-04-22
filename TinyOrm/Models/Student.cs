@@ -3,14 +3,10 @@ using TinyOrm.Abstraction.Data;
 
 namespace TinyOrm.Models;
 
-[GenerateLazyWrapper]
+[GenerateLazyDerivedClass]
 [Table("students")]
 public class Student : EntityBase
 {
-    public Student() { }
-
-    public Student(long? id) : base(id) { }
-    
     [Column("firstName")] 
     public string? FirstName { get; set; }
 

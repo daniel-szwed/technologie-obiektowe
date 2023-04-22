@@ -288,6 +288,8 @@ public class SqliteProvider : IDataProvider
             tableName = specification.TableName;
         else
             tableName = GetTableName(entityType)!;
+        
+        bool isLazyMode = typeof(ILazy).IsAssignableFrom(entityType);
 
         using (var connection = new SqliteConnection(connectionString))
         {
@@ -317,14 +319,22 @@ public class SqliteProvider : IDataProvider
                         propertyInfo?.SetValue(row, value == DBNull.Value ? null : value);
                     }
 
-                    //MapOneToOne(row);
-                    //MapOneToMany(row);
-                    //MapManyToMany(row, specification?.ExcludedTypes);
+                    if (!isLazyMode)
+                    {
+                        MapOneToOne(row);
+                        MapOneToMany(row);
+                        MapManyToMany(row, specification?.ExcludedTypes);
+                    }
+                    else
+                    {
+                        var lazyEntity = (ILazy)row;
+                        lazyEntity.SetProvider(this);
+                    }
                     result.Add(row);
                 }
             }
         }
-
+        
         return result;
     }
 
@@ -442,8 +452,6 @@ public class SqliteProvider : IDataProvider
                 property.SetValue(row, nestedItems);
             }
         }
-
-        ;
     }
 
     private Type? GetTypeByClassName(string className)

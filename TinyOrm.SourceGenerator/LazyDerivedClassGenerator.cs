@@ -7,7 +7,7 @@ using TinyOrm.Abstraction.Attributes;
 namespace TinyOrm.SourceGenerators;
 
 [Generator]
-public class LazyWrapperGenerator : ISourceGenerator
+public class LazyDerivedClassGenerator : ISourceGenerator
 {
     public void Execute(GeneratorExecutionContext context)
     {
@@ -15,7 +15,7 @@ public class LazyWrapperGenerator : ISourceGenerator
             .GetSymbolsWithName(symbolName => true, SymbolFilter.Type)
             .OfType<INamedTypeSymbol>()
             .Where(symbol =>
-                symbol.GetAttributes().Any(attr => attr.AttributeClass?.Name == nameof(GenerateLazyWrapperAttribute)));
+                symbol.GetAttributes().Any(attr => attr.AttributeClass?.Name == nameof(GenerateLazyDerivedClassAttribute)));
 
         // Generate the LazyWrapper class for each marked class
         foreach (var classToGenerate in classesToGenerate)
@@ -28,7 +28,7 @@ public class LazyWrapperGenerator : ISourceGenerator
 
     public void Initialize(GeneratorInitializationContext context)
     {
-        //throw new NotImplementedException();
+        // No initialization required for this one
     }
 
     private string GenerateLazyClassSource(INamedTypeSymbol typeSymbol)
@@ -48,12 +48,6 @@ public class LazyWrapperGenerator : ISourceGenerator
             .Where(prop =>
                 prop.GetAttributes().Any(attr => entityRelationAttributes.Any(a => a == attr.AttributeClass?.Name)));
 
-        var propertiesWithColumnAttribute = typeSymbol
-            .GetMembers()
-            .OfType<IPropertySymbol>()
-            .Where(prop => prop.GetAttributes().Any(attr => attr.AttributeClass?.Name == nameof(ColumnAttribute)));
-
-
         builder.AppendLine("using TinyOrm.Abstraction.Attributes;");
         builder.AppendLine("using TinyOrm.Abstraction.Data;");
         builder.AppendLine("using TinyOrm.Models;");
@@ -64,7 +58,7 @@ public class LazyWrapperGenerator : ISourceGenerator
         builder.AppendLine("{");
 
         builder.AppendLine($"    [Table(\"{GetTableName(typeSymbol)}\")]");
-        builder.AppendLine($"    public class Lazy{typeSymbol.Name} : {typeSymbol.Name}");
+        builder.AppendLine($"    public class Lazy{typeSymbol.Name} : {typeSymbol.Name}, ILazy");
         // open class scope
         builder.AppendLine("    {");
 
@@ -75,24 +69,15 @@ public class LazyWrapperGenerator : ISourceGenerator
 
         builder.AppendLine("        private IDataProvider dataProvider;");
         builder.AppendLine();
-
-        builder.AppendLine($"        public Lazy{typeSymbol.Name}(IDataProvider provider, {typeSymbol.Name} source) : base(source.Id)");
+        builder.AppendLine("        public void SetProvider(IDataProvider provider)");
         builder.AppendLine("        {");
         builder.AppendLine("            this.dataProvider = provider;");
-
-        builder.AppendLine();
-
-        foreach (var property in propertiesWithColumnAttribute)
-            builder.AppendLine($"            {property.Name} = source.{property.Name};");
-
         builder.AppendLine("        }");
-        builder.AppendLine();
-
-        // builder.AppendLine("        public long? Id => this.id;");
         // builder.AppendLine();
 
         foreach (var property in propertiesWithRelationAttribute)
         {
+            builder.AppendLine();
             var propertySourceCode =
                 $$"""
                         {{GetAttributes(property)}}
@@ -104,7 +89,6 @@ public class LazyWrapperGenerator : ISourceGenerator
                 """;
 
             builder.AppendLine(propertySourceCode);
-            builder.AppendLine();
         }
 
         // close class scope
